@@ -5,6 +5,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from reviewboard.attachments.mimetypes import MimetypeHandler
+from reviewboard.diffviewer.models import DiffSet, DiffSetHistory, FileDiff
 
 
 class FileAttachment(models.Model):
@@ -20,6 +21,9 @@ class FileAttachment(models.Model):
                               upload_to=os.path.join('uploaded', 'files',
                                                      '%Y', '%m', '%d'))
     mimetype = models.CharField(_('mimetype'), max_length=256, blank=True)
+    filediff = models.ForeignKey(FileDiff, blank=True, null=True,
+                                 verbose_name=_('file_diff'),
+                                 related_name="binary_file_attachment")
 
     @property
     def mimetype_handler(self):
