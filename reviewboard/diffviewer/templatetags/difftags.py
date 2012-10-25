@@ -1,11 +1,15 @@
 import re
+import logging
 
 from django import template
+from django.core.exceptions import MultipleObjectsReturned
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 from djblets.util.decorators import basictag
+from djblets.util.misc import get_object_or_none
 
+from reviewboard.attachments.models import FileAttachment
 from reviewboard.diffviewer.diffutils import STYLED_MAX_LINE_LEN
 
 
@@ -345,3 +349,24 @@ def diff_lines(file, chunk, standalone, line_fmt, anchor_fmt,
         result.append(line_fmt % context)
 
     return ''.join(result)
+
+@register.assignment_tag(takes_context=True)
+def get_binary_file_attachment_for(context, file):
+    """Fetch the FileAttachment associated with a FileDiff.
+
+    This will query for the FileAttachment based on the provided file,
+    which contains a filediff, and set the retrieved binary file attachment
+    to a variable whose name is provided as an argument to this tag.
+
+    If no matching FileAttachment is found or if there is more than one
+    FileAttachment associated with one FileDiff, None is returned, and an error
+    is logged in the latter case.
+    """
+    try:
+        binary_file_attachment = get_object_or_none(FileAttachment,
+                                                    filediff=file['filediff'])
+    except MultipleObjectsReturned:
+        # Error: only one FileAttachment should be associated with a FileDiff
+        logging.error('More than one FileAttachment associated with a FileDiff')
+        binary_file_attachment = None
+    return binary_file_attachment

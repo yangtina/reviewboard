@@ -69,7 +69,35 @@
 {%  if file.binary %}
  <tbody class="binary">
   <tr>
-   <td colspan="4">{% trans "This is a binary file. The content cannot be displayed." %}</td>
+{%   get_binary_file_attachment_for file as binary_file_attachment %}
+{%   if binary_file_attachment %}
+    <td colspan="4">
+     <div class="file-container" data-file-id="{{binary_file_attachment.id}}">
+      <div class="file" style="float: none; margin: 0;">
+       <ul class="actions">
+{%    if binary_file_attachment.review_ui %}
+        <li class="file-review-inline">
+        <a href="{% url file_attachment review_request.pk file.pk %}">
+          {% trans "Review" %}
+        </a></li>
+{%    endif %}
+       </ul>
+       <div class="file-header">
+        <a href="{{binary_file_attachment.get_absolute_url}}">
+        <img src="{{binary_file_attachment.icon_url}}" />
+        {{binary_file_attachment.filename}}</a>
+       </div>
+       <div class="file-thumbnail-container">
+        {{binary_file_attachment.thumbnail}}
+       </div>
+      </div>
+     </div>
+    </td>
+{%   else %}
+    <td colspan="4">
+      {% trans "This is a binary file. The content cannot be displayed." %}
+    </td>
+{%   endif %}
   </tr>
  </tbody>
 {%  elif file.deleted %}
