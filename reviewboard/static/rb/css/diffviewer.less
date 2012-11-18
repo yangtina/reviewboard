@@ -54,6 +54,19 @@
 @paginate-bg-color: #417690;
 @paginate-text-color: #f4f379;
 
+// Binary Files
+@binary-actions-bg: @binary-action-primary-bg;
+@binary-actions-border-color: darken(@binary-action-primary-bg, 40%);
+
+@binary-action-bg: @light-grey;
+@binary-action-border-color: @binary-actions-border-color;
+@binary-action-active-bg: darken(@binary-action-bg, 20%);
+@binary-action-hover-bg: darken(@binary-action-bg, 12%);
+
+@binary-action-primary-bg: @binary-action-bg;
+@binary-action-primary-active-bg: @binary-action-active-bg;
+@binary-action-primary-hover-bg: @binary-action-hover-bg;
+
 
 .sidebyside {
   background: white;
@@ -199,11 +212,109 @@
       display: none;
     }
 
-    &.binary td,
+    &.binary td{
+      padding: 0;
+    }
+
     &.deleted td,
     &.whitespace-file td {
       background: #dbebff;
       padding: 4px;
+    }
+
+    &.binary {
+      .actions-container {
+        background: @binary-actions-bg;
+        border-bottom: 1px @binary-action-border-color solid;
+        width: 100%;
+      }
+
+      .action (@float: right, @border-right: 0px, @border-left: 0px) {
+        float: @float;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        white-space: nowrap;
+
+        a {
+          color: black;
+          text-decoration: none;
+          padding: 4px 8px;
+
+          border-width: 0 @border-left 0 @border-right;
+          border-color: @binary-action-border-color;
+          border-style: solid;
+        }
+
+        li {
+          float: left;
+          margin: 0;
+          padding-top: 5px;
+          padding-bottom: 5px;
+
+          &:hover {
+            background-color: @binary-action-hover-bg;
+          }
+
+          &:active {
+            background-color: @binary-action-active-bg;
+          }
+
+          &.primary {
+            background-color: @binary-action-primary-bg;
+          }
+
+          &.primary:hover {
+            background-color: @binary-action-primary-hover-bg;
+          }
+
+          &.primary:active {
+            background-color: @binary-action-primary-active-bg;
+          }
+        }
+      }
+
+      .action-right {
+        .action(right, 1px, 0);
+      }
+
+      .action-left {
+        .action(left, 0, 1px);
+      }
+
+      .file-thumbnail-container {
+        margin: 0;
+        overflow: hidden;
+        padding: 5px;
+        text-align: center;
+        white-space: nowrap;
+      }
+
+      .binary-file-container {
+        float: right;
+        width: 100%;
+      }
+
+      .binary-file {
+        float: right;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        white-space: nowrap;
+        width: 100%;
+
+        img {
+          vertical-align: middle;
+        }
+
+        li {
+          display: block;
+          float: left;
+          margin: 0;
+          padding: 0;
+          width: 50%;
+        }
+      }
     }
 
     &.delete {
