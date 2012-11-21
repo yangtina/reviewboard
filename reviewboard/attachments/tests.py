@@ -2,14 +2,22 @@ import mimeparse
 import os
 
 from django.conf import settings
+from django.contrib.auth.models import AnonymousUser, User
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.template import Context, Template
 from django.test import TestCase
 
 from reviewboard.attachments.forms import UploadFileForm
 from reviewboard.attachments.mimetypes import MimetypeHandler, \
                                               register_mimetype_handler, \
                                               unregister_mimetype_handler
-from reviewboard.reviews.models import ReviewRequest
+from reviewboard.attachments.models import FileAttachment
+from reviewboard.diffviewer.models import DiffSet, DiffSetHistory, FileDiff
+from reviewboard.reviews.models import ReviewRequest, \
+                                       ReviewRequestDraft, \
+                                       Review
+from reviewboard.scmtools.models import Repository, Tool
+>>>>>>> Add a unit test case for inline binary file attachment
 
 
 class FileAttachmentTests(TestCase):
@@ -128,3 +136,72 @@ class MimetypeHandlerTests(TestCase):
         self.assertEqual(self._handler_for("foo/def"), StarDefMimetype)
         # Left match and Wildcard should trump Left Wildcard and match
         self.assertEqual(self._handler_for("test/def"), MimetypeTest)
+
+
+class BinaryFileAttachmentTests(TestCase):
+    """Tests for inline binary file attachments"""
+    fixtures = ['test_users', 'test_reviewrequests', 'test_scmtools',
+                'test_site']
+
+    def test_binary_file_attachment_filediff_association(self):
+        """Testing inline binary file attachments and filediff association by:
+
+        Test ability of Reviews.BaseReviewRequestDetails.get_file_attachments()
+        to filter out binary file attachments, associated with a filediff, from
+        standard file attachments, solely associated with a review request.
+
+        Test the ability get_binary_file_attachment_for assignment tag to
+        fetch binary_file_attachment from a file.
+        """
+
+        # Set up user and review request
+        user = User.objects.get(username='doc')
+        review_request = ReviewRequest.objects.create(user, None)
+
+        # Load the image used for file attachments
+        filename = os.path.join(settings.STATIC_ROOT,
+                                'rb', 'images', 'trophy.png')
+        f = open(filename, 'r')
+        file = SimpleUploadedFile(f.name, f.read(), content_type='image/png')
+        f.close()
+
+        # Setup Repository, DiffSetHistory, DiffSet and filediff for
+        # the binary file
+        repository = Repository.objects.get(pk=1)
+        diffset_history = DiffSetHistory.objects.create(name='testhistory')
+        diffset = DiffSet.objects.create(name='test',
+                                         revision=1,
+                                         repository=repository,
+                                         history=diffset_history)
+        filediff = FileDiff(source_file=filename,
+                            dest_file=filename,
+                            diffset=diffset,
+                            binary=True)
+        review_request.diffset_history = diffset_history
+        filediff.save()
+
+        # Create a standard file attachment
+        fileattachment = FileAttachment.objects.create(caption='not inline',
+                                                       file=file,
+                                                       mimetype='image/png')
+        # Create a binary file attachment to be displayed inline
+        binary_file = FileAttachment.objects.create(caption='binary',
+                                                    file=file,
+                                                    mimetype='image/png',
+                                                    filediff=filediff)
+        review_request.file_attachments.add(fileattachment)
+        review_request.file_attachments.add(binary_file)
+        review_request.publish(user)
+
+        # Get the view_diff page
+        self.client.login(username='doc', password='doc')
+        response = self.client.get('/r/%d/diff/' % review_request.pk)
+        self.assertEqual(response.status_code, 200)
+
+        # Binary file should be excluded so len is 1 instead of 2
+        file_attachments = response.context['file_attachments']
+        self.assertEqual(len(file_attachments), 1)
+
+        # Binary file should be fetched as binary_file_attachment
+        binary_file_attachment = response.context['binary_file_attachment']
+        self.assertEqual(binary_file_attachment, binary_file)
