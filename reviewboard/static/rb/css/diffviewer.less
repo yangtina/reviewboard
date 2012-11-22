@@ -55,18 +55,17 @@
 @paginate-text-color: #f4f379;
 
 // Binary Files
-@binary-actions-bg: @binary-action-primary-bg;
-@binary-actions-border-color: darken(@binary-action-primary-bg, 40%);
+@inline-actions-bg: @inline-action-primary-bg;
+@inline-actions-border-color: darken(@inline-action-primary-bg, 40%);
 
-@binary-action-bg: @light-grey;
-@binary-action-border-color: @binary-actions-border-color;
-@binary-action-active-bg: darken(@binary-action-bg, 20%);
-@binary-action-hover-bg: darken(@binary-action-bg, 12%);
+@inline-action-bg: @light-grey;
+@inline-action-border-color: @inline-actions-border-color;
+@inline-action-active-bg: darken(@inline-action-bg, 20%);
+@inline-action-hover-bg: darken(@inline-action-bg, 12%);
 
-@binary-action-primary-bg: @binary-action-bg;
-@binary-action-primary-active-bg: @binary-action-active-bg;
-@binary-action-primary-hover-bg: @binary-action-hover-bg;
-
+@inline-action-primary-bg: @inline-action-bg;
+@inline-action-primary-active-bg: @inline-action-active-bg;
+@inline-action-primary-hover-bg: @inline-action-hover-bg;
 
 .sidebyside {
   background: white;
@@ -124,6 +123,10 @@
       border-right: 1px @diff-border-color solid;
       width: 1%; /* Make sure this doesn't stretch if the header stretches. */
     }
+  }
+
+  img.header-file-icon {
+    vertical-align: middle;
   }
 
   pre {
@@ -212,7 +215,7 @@
       display: none;
     }
 
-    &.binary td{
+    &.binary td {
       padding: 0;
     }
 
@@ -223,63 +226,52 @@
     }
 
     &.binary {
-      .actions-container {
-        background: @binary-actions-bg;
-        border-bottom: 1px @binary-action-border-color solid;
-        width: 100%;
+      .inline-actions-container {
+        .actions-container;
+        background: @inline-actions-bg;
+        border-bottom: 1px @inline-action-border-color solid;
+        .border-radius(0 0 0 0);
       }
 
-      .action (@float: right, @border-right: 0px, @border-left: 0px) {
+      .inline-actions (@float: right, @border-right: 0px, @border-left: 0px) {
+        .actions;
         float: @float;
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        white-space: nowrap;
 
         a {
-          color: black;
-          text-decoration: none;
-          padding: 4px 8px;
-
           border-width: 0 @border-left 0 @border-right;
-          border-color: @binary-action-border-color;
+          border-color: @inline-action-border-color;
           border-style: solid;
         }
 
         li {
-          float: left;
-          margin: 0;
-          padding-top: 5px;
-          padding-bottom: 5px;
-
           &:hover {
-            background-color: @binary-action-hover-bg;
+            background-color: @inline-action-hover-bg;
           }
 
           &:active {
-            background-color: @binary-action-active-bg;
+            background-color: @inline-action-active-bg;
           }
 
           &.primary {
-            background-color: @binary-action-primary-bg;
+            background-color: @inline-action-primary-bg;
           }
 
           &.primary:hover {
-            background-color: @binary-action-primary-hover-bg;
+            background-color: @inline-action-primary-hover-bg;
           }
 
           &.primary:active {
-            background-color: @binary-action-primary-active-bg;
+            background-color: @inline-action-primary-active-bg;
           }
         }
       }
 
-      .action-right {
-        .action(right, 1px, 0);
+      .inline-actions-right {
+        .inline-actions(right, 1px, 0);
       }
 
-      .action-left {
-        .action(left, 0, 1px);
+      .inline-actions-left {
+        .inline-actions(left, 0, 1px);
       }
 
       .file-thumbnail-container {
@@ -288,32 +280,6 @@
         padding: 5px;
         text-align: center;
         white-space: nowrap;
-      }
-
-      .binary-file-container {
-        float: right;
-        width: 100%;
-      }
-
-      .binary-file {
-        float: right;
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        white-space: nowrap;
-        width: 100%;
-
-        img {
-          vertical-align: middle;
-        }
-
-        li {
-          display: block;
-          float: left;
-          margin: 0;
-          padding: 0;
-          width: 50%;
-        }
       }
     }
 

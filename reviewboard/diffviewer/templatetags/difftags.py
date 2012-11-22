@@ -350,6 +350,7 @@ def diff_lines(file, chunk, standalone, line_fmt, anchor_fmt,
 
     return ''.join(result)
 
+
 @register.assignment_tag(takes_context=True)
 def get_binary_file_attachment_for(context, file, filedifftype):
     """Fetch the FileAttachment associated with a FileDiff.
@@ -361,12 +362,26 @@ def get_binary_file_attachment_for(context, file, filedifftype):
     If no matching FileAttachment is found or if there is more than one
     FileAttachment associated with one FileDiff, None is returned, and an error
     is logged in the latter case.
+
+    filedifftype include 'filediff' and 'interfilediff'
     """
+    if file[filedifftype] == None:
+        logging.debug("file[%s] is None in "
+                      "get_binary_file_attachment_for file %s by %s",
+                      filedifftype,
+                      file,
+                      filedifftype)
+        return None
+
     try:
         binary_file_attachment = get_object_or_none(FileAttachment,
                                                     filediff=file[filedifftype])
     except MultipleObjectsReturned:
-        # Error: only one FileAttachment should be associated with a FileDiff
-        logging.error('More than one FileAttachment associated with a FileDiff')
+        # Only one FileAttachment should be associated with a FileDiff
+        logging.error("More than one FileAttachments associated with a "
+                      "FileDiff: get_binary_file_attachment_for file %s by %s",
+                      file,
+                      filedifftype)
         binary_file_attachment = None
+
     return binary_file_attachment
