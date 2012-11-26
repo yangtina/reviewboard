@@ -374,14 +374,11 @@ def get_binary_file_attachment_for(context, file, filedifftype):
         return None
 
     try:
-        binary_file_attachment = get_object_or_none(FileAttachment,
-                                                    filediff=file[filedifftype])
+        return get_object_or_none(FileAttachment, filediff=file[filedifftype])
     except MultipleObjectsReturned:
         # Only one FileAttachment should be associated with a FileDiff
         logging.error("More than one FileAttachments associated with a "
                       "FileDiff: get_binary_file_attachment_for file %s by %s",
                       file,
                       filedifftype)
-        binary_file_attachment = None
-
-    return binary_file_attachment
+        return None

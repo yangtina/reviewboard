@@ -55,17 +55,10 @@
 @paginate-text-color: #f4f379;
 
 // Binary Files
-@inline-actions-bg: @inline-action-primary-bg;
-@inline-actions-border-color: darken(@inline-action-primary-bg, 40%);
-
 @inline-action-bg: @light-grey;
-@inline-action-border-color: @inline-actions-border-color;
-@inline-action-active-bg: darken(@inline-action-bg, 20%);
+@inline-action-border-color: @diff-border-color;
 @inline-action-hover-bg: darken(@inline-action-bg, 12%);
-
-@inline-action-primary-bg: @inline-action-bg;
-@inline-action-primary-active-bg: @inline-action-active-bg;
-@inline-action-primary-hover-bg: @inline-action-hover-bg;
+@inline-actions-bg: @inline-action-bg;
 
 .sidebyside {
   background: white;
@@ -101,6 +94,14 @@
       &.right {
         width: 100%;
       }
+
+      &.binary-left {
+        .left;
+      }
+
+      &.binary-right {
+        .right;
+      }
     }
   }
 
@@ -122,6 +123,15 @@
     &.line {
       border-right: 1px @diff-border-color solid;
       width: 1%; /* Make sure this doesn't stretch if the header stretches. */
+    }
+
+    &.binary-left {
+      .left;
+    }
+
+    &.binary-right {
+      .right;
+      border-right: 1px @diff-border-color solid;
     }
   }
 
@@ -233,45 +243,32 @@
         .border-radius(0 0 0 0);
       }
 
-      .inline-actions (@float: right, @border-right: 0px, @border-left: 0px) {
+      .inline-actions (@float: right) {
         .actions;
         float: @float;
-
-        a {
-          border-width: 0 @border-left 0 @border-right;
-          border-color: @inline-action-border-color;
-          border-style: solid;
-        }
 
         li {
           &:hover {
             background-color: @inline-action-hover-bg;
           }
-
-          &:active {
-            background-color: @inline-action-active-bg;
-          }
-
-          &.primary {
-            background-color: @inline-action-primary-bg;
-          }
-
-          &.primary:hover {
-            background-color: @inline-action-primary-hover-bg;
-          }
-
-          &.primary:active {
-            background-color: @inline-action-primary-active-bg;
-          }
         }
       }
 
       .inline-actions-right {
-        .inline-actions(right, 1px, 0);
+        .inline-actions(right);
+
+        a {
+          border-left: 1px @inline-action-border-color solid;
+        }
       }
 
       .inline-actions-left {
-        .inline-actions(left, 0, 1px);
+        .inline-actions(left);
+
+        a {
+          border-right: 1px @inline-action-border-color solid;
+          border-left: 0px;
+        }
       }
 
       .file-thumbnail-container {

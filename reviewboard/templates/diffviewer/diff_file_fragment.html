@@ -46,19 +46,28 @@
 {%  if not standalone %}
 <table class="sidebyside{% if not file.interfilediff and file.newfile and not file.filediff.parent_diff %} newfile{% endif %}" id="file{{file.filediff.id}}">
  <colgroup>
+{% if file.binary %}
+  <col class="binary-left" />
+  <col class="binary-right" />
+{% else %}
   <col class="line" />
   <col class="left" />
   <col class="line" />
   <col class="right" />
+{% endif %}
  </colgroup>
  <thead>
   <tr onClick="gotoAnchor('{{file.index}}');">
 {%   if file.dest_filename == file.depot_filename %}
-   <th colspan="4"><a name="{{file.index}}" class="file-anchor"></a>
-{%    if binary_file_attachment %}
+{%    if file.binary %}
+   <th colspan="2"><a name="{{file.index}}" class="file-anchor"></a>
+{%     if binary_file_attachment %}
     <img class="header-file-icon" src="{{binary_file_attachment.icon_url}}" />
-{%    elif interfile_binary_file_attachment %}
+{%     elif interfile_binary_file_attachment %}
     <img class="header-file-icon" src="{{interfile_binary_file_attachment.icon_url}}" />
+{%     endif %}
+{%    else %}
+   <th colspan="4"><a name="{{file.index}}" class="file-anchor"></a>
 {%    endif %}
     {{file.depot_filename}}
   </th>
@@ -68,8 +77,15 @@
 {%   endif %}{# file.dest_filename == file.depot_filename #}
   </tr>
   <tr>
-{%   if file.moved and file.num_changes == 0 %}
+{%   if file.moved and file.num_changes == 0 and not file.binary %}
    <th colspan="4" class="rev">{% trans "No changes were made to this file." %}</th>
+{%   elif file.binary %}
+{%    if file.moved and file.num_changes == 0 or file.newfile and not interfile_binary_file_attachment %}
+   <th colspan="2" class="rev">{{file.dest_revision}}</th>
+{%    else %}
+   <th colspan="1" class="rev">{{file.revision}}</th>
+   <th colspan="1" class="rev">{{file.dest_revision}}</th>
+{%    endif %}
 {%   else %}
    <th colspan="2" class="rev">{{file.revision}}</th>
    <th colspan="2" class="rev">{{file.dest_revision}}</th>
@@ -81,9 +97,9 @@
  <tbody class="binary">
   <tr class="inline-actions-header">
 {%    if file.moved and file.num_changes == 0 or file.newfile and not interfile_binary_file_attachment %}
-   <td colspan="4">
-{%    else %}
    <td colspan="2">
+{%    else %}
+   <td colspan="1">
     <div class="inline-actions-container clearfix">
      <ul class="inline-actions-left">
 {%     if interfile_binary_file_attachment %}
@@ -92,7 +108,7 @@
      </ul>
     </div>
    </td>
-   <td colspan="2">
+   <td colspan="1">
 {%    endif %}
     <div class="inline-actions-container clearfix">
      <ul class="inline-actions-right">
@@ -103,16 +119,16 @@
 {%    endif %}
 {%   endif %}
 {%   if not binary_file_attachment or not binary_file_attachment.review_ui %}
-      <li><a href="#">{% trans "Add Comment" %}</a></li>
+      <li class="file-add-comment"><a href="#">{% trans "Add Comment" %}</a></li>
 {%   endif %}
      </ul>
     </div>
   </tr>{# inline-actions-header #}
   <tr class="inline-files-container">
 {%    if file.moved and file.num_changes == 0 or file.newfile and not interfile_binary_file_attachment %}
-   <td colspan="4">
-{%    else %}
    <td colspan="2">
+{%    else %}
+   <td colspan="1">
 {%     if not interfile_binary_file_attachment %}
 {% trans "This is a binary file. The content cannot be displayed." %}
 {%     elif interfile_binary_file_attachment.thumbnail %}
@@ -121,7 +137,7 @@
 {% trans "No preview avaliable." %}
 {%     endif %}
    </td>
-   <td colspan="2">
+   <td colspan="1">
 {%    endif %}
 {%    if not binary_file_attachment %}
 {% trans "This is a binary file. The content cannot be displayed." %}
