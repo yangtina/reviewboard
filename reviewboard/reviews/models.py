@@ -289,7 +289,7 @@ class BaseReviewRequestDetails(models.Model):
 
         This includes all current file attachments, but not previous ones.
 
-        This excludes binary file attachments associated with a FileDiff.
+        This excludes diff file attachments associated with a FileDiff.
 
         By accessing file attachments through this method, future review
         request lookups from the file attachments will be avoided.
@@ -299,7 +299,7 @@ class BaseReviewRequestDetails(models.Model):
         for file_attachment in self.file_attachments.all():
             file_attachment._review_request = review_request
 
-            if file_attachment.filediff_id is None:
+            if not file_attachment.filediff_id:
                 yield file_attachment
 
     def get_inactive_file_attachments(self):
@@ -308,7 +308,7 @@ class BaseReviewRequestDetails(models.Model):
         This only includes file attachments that were previously visible
         but have since been removed.
 
-        This excludes binary file attachments associated with a FileDiff.
+        This excludes diff file attachments associated with a FileDiff.
 
         By accessing file attachments through this method, future review
         request lookups from the file attachments will be avoided.
@@ -318,7 +318,7 @@ class BaseReviewRequestDetails(models.Model):
         for file_attachment in self.inactive_file_attachments.all():
             file_attachment._review_request = review_request
 
-            if file_attachment.filediff_id is None:
+            if not file_attachment.filediff_id:
                 yield file_attachment
 
     def add_default_reviewers(self):

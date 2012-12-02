@@ -17,7 +17,6 @@ from reviewboard.reviews.models import ReviewRequest, \
                                        ReviewRequestDraft, \
                                        Review
 from reviewboard.scmtools.models import Repository, Tool
->>>>>>> Add a unit test case for inline binary file attachment
 
 
 class FileAttachmentTests(TestCase):
@@ -138,20 +137,20 @@ class MimetypeHandlerTests(TestCase):
         self.assertEqual(self._handler_for("test/def"), MimetypeTest)
 
 
-class BinaryFileAttachmentTests(TestCase):
-    """Tests for inline binary file attachments"""
+class DiffFileAttachmentTests(TestCase):
+    """Tests for inline diff file attachments"""
     fixtures = ['test_users', 'test_reviewrequests', 'test_scmtools',
                 'test_site']
 
-    def test_binary_file_attachment_filediff_association(self):
-        """Testing inline binary file attachments and filediff association by:
+    def test_diff_file_attachment_filediff_association(self):
+        """Testing inline diff file attachments and filediff association by:
 
         Test ability of Reviews.BaseReviewRequestDetails.get_file_attachments()
-        to filter out binary file attachments, associated with a filediff, from
+        to filter out diff file attachments, associated with a filediff, from
         standard file attachments, solely associated with a review request.
 
-        Test the ability get_binary_file_attachment_for assignment tag to
-        fetch binary_file_attachment from a file.
+        Test the ability get_diff_file_attachment_for assignment tag to
+        fetch diff_file_attachment from a file.
         """
 
         # Set up user and review request
@@ -184,13 +183,13 @@ class BinaryFileAttachmentTests(TestCase):
         fileattachment = FileAttachment.objects.create(caption='not inline',
                                                        file=file,
                                                        mimetype='image/png')
-        # Create a binary file attachment to be displayed inline
-        binary_file = FileAttachment.objects.create(caption='binary',
-                                                    file=file,
-                                                    mimetype='image/png',
-                                                    filediff=filediff)
+        # Create a diff file attachment to be displayed inline
+        diff_fileattachment = FileAttachment.objects.create(caption='binary',
+                                                            file=file,
+                                                        mimetype='image/png',
+                                                        filediff=filediff)
         review_request.file_attachments.add(fileattachment)
-        review_request.file_attachments.add(binary_file)
+        review_request.file_attachments.add(diff_fileattachment)
         review_request.publish(user)
 
         # Get the view_diff page
@@ -198,10 +197,10 @@ class BinaryFileAttachmentTests(TestCase):
         response = self.client.get('/r/%d/diff/' % review_request.pk)
         self.assertEqual(response.status_code, 200)
 
-        # Binary file should be excluded so len is 1 instead of 2
+        # Diff file attachments should be excluded so len is 1 instead of 2
         file_attachments = response.context['file_attachments']
         self.assertEqual(len(file_attachments), 1)
 
-        # Binary file should be fetched as binary_file_attachment
-        binary_file_attachment = response.context['binary_file_attachment']
-        self.assertEqual(binary_file_attachment, binary_file)
+        # Diff file attachment should be fetched as diff_file_attachment
+        diff_file_attachment = response.context['diff_file_attachment']
+        self.assertEqual(diff_file_attachment, diff_fileattachment)

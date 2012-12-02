@@ -23,11 +23,14 @@ class FileAttachment(models.Model):
     mimetype = models.CharField(_('mimetype'), max_length=256, blank=True)
     filediff = models.ForeignKey(FileDiff, blank=True, null=True,
                                  verbose_name=_('file_diff'),
-                                 related_name="binary_file_attachment")
+                                 related_name="diff_file_attachment")
 
     @property
     def mimetype_handler(self):
-        return MimetypeHandler.for_type(self)
+        if not hasattr(self, '_thumbnail'):
+            self._thumbnail = MimetypeHandler.for_type(self)
+
+        return self._thumbnail
 
     @property
     def review_ui(self):

@@ -86,21 +86,13 @@
 
   &.newfile {
     col {
-      &.left {
+      &.left &.binary-left{
         border-right: 1px @diff-border-color solid;
         width: 0%;
       }
 
-      &.right {
+      &.right &.binary-right {
         width: 100%;
-      }
-
-      &.binary-left {
-        .left;
-      }
-
-      &.binary-right {
-        .right;
       }
     }
   }
@@ -111,12 +103,12 @@
   }
 
   col {
-    &.left {
+    &.left &.binary-left{
       border-right: 1px @diff-border-color solid;
       width: 50%;
     }
 
-    &.right {
+    &.right &.binary-right{
       width: 50%;
     }
 
@@ -125,13 +117,8 @@
       width: 1%; /* Make sure this doesn't stretch if the header stretches. */
     }
 
-    &.binary-left {
-      .left;
-    }
-
     &.binary-right {
-      .right;
-      border-right: 1px @diff-border-color solid;
+      border-left: 1px @diff-border-color solid;
     }
   }
 
@@ -277,6 +264,11 @@
         padding: 5px;
         text-align: center;
         white-space: nowrap;
+      }
+
+      p {
+        margin: 0;
+        padding: 4px;
       }
     }
 
