@@ -61,7 +61,8 @@
   <tr onClick="gotoAnchor('{{file.index}}');">
 {%   if file.dest_filename == file.depot_filename %}
 {%    if file.binary %}
-   <th colspan="2"><a name="{{file.index}}" class="file-anchor"></a>
+   <th colspan="2">
+    <a name="{{file.index}}" class="file-anchor"></a>
 {%     if diff_file_attachment %}
     <img class="header-file-icon" src="{{diff_file_attachment.icon_url}}" />
 {%     elif interfile_diff_file_attachment %}
@@ -84,8 +85,8 @@
 {%    if file.moved and file.num_changes == 0 or file.newfile and not interfile_diff_file_attachment %}
    <th colspan="2" class="rev">{{file.dest_revision}}</th>
 {%    else %}
-   <th colspan="1" class="rev">{{file.revision}}</th>
-   <th colspan="1" class="rev">{{file.dest_revision}}</th>
+   <th class="rev">{{file.revision}}</th>
+   <th class="rev">{{file.dest_revision}}</th>
 {%    endif %}
 {%   else %}
    <th colspan="2" class="rev">{{file.revision}}</th>
@@ -95,6 +96,25 @@
  </thead>
 {%  endif %}{# not standalone #}
 {%  if file.binary %}
+ <tbody class="binary" data-file-id="{{diff_file_attachment.id}}">
+  <tr class="inline-actions-header">
+{%    if file.moved and file.num_changes == 0 or file.newfile and not interfile_diff_file_attachment %}
+   <td colspan="2">
+{%    else %}
+   <td>
+    <div class="actions-container inline-actions-container clearfix">
+     <ul class="actions inline-actions-left">
+{%     if interfile_diff_file_attachment %}
+      <li class="download"><a href="{{interfile_diff_file_attachment.get_absolute_url}}">{% trans "Download" %}</a></li>
+{%     endif %}
+     </ul>
+    </div>
+   </td>
+   <td>
+{%    endif %}
+    <div class="actions-container inline-actions-container clearfix">
+     <ul class="actions inline-actions-right">
+{%   if diff_file_attachment %}
 <script type="text/javascript">
   $(document).ready(function() {
     RB.setFileAttachmentComments({
@@ -105,25 +125,6 @@
     });
   });
 </script>
- <tbody class="binary" data-file-id="{{diff_file_attachment.id}}">
-  <tr class="inline-actions-header">
-{%    if file.moved and file.num_changes == 0 or file.newfile and not interfile_diff_file_attachment %}
-   <td colspan="2">
-{%    else %}
-   <td colspan="1">
-    <div class="inline-actions-container clearfix">
-     <ul class="inline-actions-left">
-{%     if interfile_diff_file_attachment %}
-      <li class="download"><a href="{{interfile_diff_file_attachment.get_absolute_url}}">{% trans "Download" %}</a></li>
-{%     endif %}
-     </ul>
-    </div>
-   </td>
-   <td colspan="1">
-{%    endif %}
-    <div class="inline-actions-container clearfix">
-     <ul class="inline-actions-right">
-{%   if diff_file_attachment %}
       <li><a href="{{diff_file_attachment.get_absolute_url}}">{% trans "Download" %}</a></li>
 {%    if diff_file_attachment.review_ui %}
       <li class="{% if file.review_ui.allow_inline %}file-review-inline %}{% else %}file-review{% endif %}"><a href="{% url file_attachment review_request.pk diff_file_attachment.pk %}">{% trans "Review" %}</a></li>
@@ -138,7 +139,7 @@
 {%    if file.moved and file.num_changes == 0 or file.newfile and not interfile_diff_file_attachment %}
    <td colspan="2">
 {%    else %}
-   <td colspan="1">
+   <td>
 {%     if not interfile_diff_file_attachment %}
 {% trans "This is a binary file. The content cannot be displayed." %}
 {%     elif interfile_diff_file_attachment.thumbnail %}
@@ -147,7 +148,7 @@
 {% trans "No preview avaliable." %}
 {%     endif %}
    </td>
-   <td colspan="1">
+   <td>
 {%    endif %}
 {%    if not diff_file_attachment %}
    <p>{% trans "This is a binary file. The content cannot be displayed." %}</p>

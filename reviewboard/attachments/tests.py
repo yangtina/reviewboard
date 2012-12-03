@@ -143,15 +143,7 @@ class DiffFileAttachmentTests(TestCase):
                 'test_site']
 
     def test_diff_file_attachment_filediff_association(self):
-        """Testing inline diff file attachments and filediff association by:
-
-        Test ability of Reviews.BaseReviewRequestDetails.get_file_attachments()
-        to filter out diff file attachments, associated with a filediff, from
-        standard file attachments, solely associated with a review request.
-
-        Test the ability get_diff_file_attachment_for assignment tag to
-        fetch diff_file_attachment from a file.
-        """
+        """Testing inline diff file attachments and filediff association"""
 
         # Set up user and review request
         user = User.objects.get(username='doc')
@@ -180,16 +172,16 @@ class DiffFileAttachmentTests(TestCase):
         filediff.save()
 
         # Create a standard file attachment
-        fileattachment = FileAttachment.objects.create(caption='not inline',
-                                                       file=file,
-                                                       mimetype='image/png')
+        file_attachment = FileAttachment.objects.create(caption='not inline',
+                                                        file=file,
+                                                        mimetype='image/png')
         # Create a diff file attachment to be displayed inline
-        diff_fileattachment = FileAttachment.objects.create(caption='binary',
-                                                            file=file,
-                                                        mimetype='image/png',
-                                                        filediff=filediff)
-        review_request.file_attachments.add(fileattachment)
-        review_request.file_attachments.add(diff_fileattachment)
+        diff_file_attachment = FileAttachment.objects.create(caption='binary',
+                                                             file=file,
+                                                         mimetype='image/png',
+                                                         filediff=filediff)
+        review_request.file_attachments.add(file_attachment)
+        review_request.file_attachments.add(diff_file_attachment)
         review_request.publish(user)
 
         # Get the view_diff page
@@ -197,10 +189,13 @@ class DiffFileAttachmentTests(TestCase):
         response = self.client.get('/r/%d/diff/' % review_request.pk)
         self.assertEqual(response.status_code, 200)
 
+        # Test Reviews.BaseReviewRequestDetails.get_file_attachments():
         # Diff file attachments should be excluded so len is 1 instead of 2
-        file_attachments = response.context['file_attachments']
-        self.assertEqual(len(file_attachments), 1)
+        file_attachment_list = response.context['file_attachments']
+        self.assertEqual(len(file_attachment_list), 1)
 
+        # Test the ability of get_diff_file_attachment_for assignment tag to
+        # fetch diff_file_attachment from a file base on association.
         # Diff file attachment should be fetched as diff_file_attachment
-        diff_file_attachment = response.context['diff_file_attachment']
-        self.assertEqual(diff_file_attachment, diff_fileattachment)
+        fetched_diff_file_attachment = response.context['diff_file_attachment']
+        self.assertEqual(fetched_diff_file_attachment, diff_file_attachment)

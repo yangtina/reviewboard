@@ -86,12 +86,12 @@
 
   &.newfile {
     col {
-      &.left &.binary-left{
+      &.left, &.binary-left {
         border-right: 1px @diff-border-color solid;
         width: 0%;
       }
 
-      &.right &.binary-right {
+      &.right, &.binary-right {
         width: 100%;
       }
     }
@@ -103,12 +103,12 @@
   }
 
   col {
-    &.left &.binary-left{
+    &.left, &.binary-left {
       border-right: 1px @diff-border-color solid;
       width: 50%;
     }
 
-    &.right &.binary-right{
+    &.right, &.binary-right {
       width: 50%;
     }
 
@@ -223,17 +223,18 @@
     }
 
     &.binary {
-      .inline-actions-container {
-        .actions-container;
+      .inline-actions-header {
         background: @inline-actions-bg;
         border-bottom: 1px @inline-action-border-color solid;
+      }
+
+      .inline-actions-container {
+        background: none;
+        border-bottom: 0px;
         .border-radius(0 0 0 0);
       }
 
-      .inline-actions (@float: right) {
-        .actions;
-        float: @float;
-
+      .inline-actions-right, .inline-actions-left {
         li {
           &:hover {
             background-color: @inline-action-hover-bg;
@@ -242,7 +243,7 @@
       }
 
       .inline-actions-right {
-        .inline-actions(right);
+        float: right;
 
         a {
           border-left: 1px @inline-action-border-color solid;
@@ -250,7 +251,7 @@
       }
 
       .inline-actions-left {
-        .inline-actions(left);
+        float: left;
 
         a {
           border-right: 1px @inline-action-border-color solid;

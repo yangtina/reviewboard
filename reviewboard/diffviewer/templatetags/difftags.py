@@ -1,5 +1,5 @@
-import re
 import logging
+import re
 
 from django import template
 from django.core.exceptions import MultipleObjectsReturned
@@ -352,7 +352,7 @@ def diff_lines(file, chunk, standalone, line_fmt, anchor_fmt,
 
 
 @register.assignment_tag(takes_context=True)
-def get_diff_file_attachment_for(context, file, filedifftype):
+def get_diff_file_attachment_for(context, file, filediff_type):
     """Fetch the FileAttachment associated with a FileDiff.
 
     This will query for the FileAttachment based on the provided file,
@@ -363,22 +363,22 @@ def get_diff_file_attachment_for(context, file, filedifftype):
     FileAttachment associated with one FileDiff, None is returned, and an error
     is logged in the latter case.
 
-    filedifftype include 'filediff' and 'interfilediff'
+    filediff_type can be either 'filediff' and 'interfilediff'
     """
-    if not file[filedifftype]:
+    if not file[filediff_type]:
         logging.debug("file[%s] is None in "
                       "get_diff_file_attachment_for file %s by %s",
-                      filedifftype,
+                      filediff_type,
                       file,
-                      filedifftype)
+                      filediff_type)
         return None
 
     try:
-        return get_object_or_none(FileAttachment, filediff=file[filedifftype])
+        return get_object_or_none(FileAttachment, filediff=file[filediff_type])
     except MultipleObjectsReturned:
         # Only one FileAttachment should be associated with a FileDiff
         logging.error("More than one FileAttachments associated with a "
                       "FileDiff: get_diff_file_attachment_for file %s by %s",
                       file,
-                      filedifftype)
+                      filediff_type)
         return None
